@@ -1,11 +1,10 @@
 /* ==========================================================================
-   Fond WebGL du hero — sphère de particules dorées autour d'un noyau 3D.
+   Fond WebGL du hero — nuage de points sphérique interactif.
 
      · les particules fuient le curseur et s'illuminent en s'approchant
      · un clic (ou un tap) envoie une onde de choc qui traverse la sphère
      · le défilement disperse et estompe l'ensemble
      · les liens entre points subissent exactement la même déformation
-     · au centre : icosaèdre filaire lumineux + anneaux orbitaux en rotation
 
    Module ES isolé : si Three.js ne charge pas, si WebGL manque ou si l'utilisateur
    préfère moins d'animation, ce fichier ne fait rien et la page reste
@@ -42,22 +41,10 @@ function start(THREE) {
 
   const scene = new THREE.Scene();
   const camera = new THREE.PerspectiveCamera(52, W / H, 0.1, 100);
-  camera.position.z = 17.5;                 // un peu de recul : la scène respire
+  camera.position.z = 15.5;
 
   const group = new THREE.Group();
   scene.add(group);
-
-  // Sur écran large, la sphère se place derrière la colonne de droite
-  // pour laisser le titre respirer. Demi-largeur visible au plan z = 0 :
-  function layout() {
-    const halfH = Math.tan((camera.fov * Math.PI) / 360) * camera.position.z;
-    const halfW = halfH * camera.aspect;
-    const off = camera.aspect > 1.15 ? halfW * 0.36 : 0;
-    scene.position.x = off;
-    const s = camera.aspect > 1.15 ? 1 : 0.82;
-    scene.scale.setScalar(s);
-  }
-  layout();
 
   /* ---------------- points sur une sphère (spirale de Fibonacci) ---------------- */
   const N = 1800;
@@ -197,9 +184,9 @@ function start(THREE) {
   /* ---------------- liens entre points proches (topologie calculée une fois) ---------------- */
   const seg = [];
   const scol = [];
-  const MAXD = 1.75;
-  const CAP = 4;
-  const MAX_SEG = 4200;               // réseau plus dense, comme la 1re version
+  const MAXD = 1.55;
+  const CAP = 3;
+  const MAX_SEG = 2800;
 
   outer:
   for (let a = 0; a < N; a++) {
@@ -240,81 +227,11 @@ function start(THREE) {
       varying vec3 vC;
       varying float vGlow;
       void main(){
-        float a = 0.2 + vGlow * 0.5;
+        float a = 0.105 + vGlow * 0.48;
         gl_FragColor = vec4(vC, a * (1.0 - uScroll * 0.85));
       }`
   });
   group.add(new THREE.LineSegments(lg, lmat));
-
-  /* ---------------- noyau : icosaèdres filaires imbriqués ---------------- */
-  const core = new THREE.Group();
-  group.add(core);
-
-  const ico = new THREE.LineSegments(
-    new THREE.EdgesGeometry(new THREE.IcosahedronGeometry(2.9, 1)),
-    new THREE.LineBasicMaterial({ color: 0xffc933, transparent: true, opacity: 0.55,
-                                  blending: THREE.AdditiveBlending, depthWrite: false })
-  );
-  core.add(ico);
-
-  const ico2 = new THREE.LineSegments(
-    new THREE.EdgesGeometry(new THREE.IcosahedronGeometry(1.7, 0)),
-    new THREE.LineBasicMaterial({ color: 0xffe58a, transparent: true, opacity: 0.8,
-                                  blending: THREE.AdditiveBlending, depthWrite: false })
-  );
-  core.add(ico2);
-
-  // sommets de l'icosaèdre : petits points brillants
-  const icoPts = new THREE.Points(
-    new THREE.IcosahedronGeometry(2.9, 1),
-    new THREE.PointsMaterial({ color: 0xfff1c2, size: 0.13, transparent: true, opacity: 0.95,
-                               blending: THREE.AdditiveBlending, depthWrite: false })
-  );
-  core.add(icoPts);
-
-  // halo : sprite à dégradé radial dessiné sur un canvas
-  const gc = document.createElement('canvas');
-  gc.width = gc.height = 128;
-  const gx = gc.getContext('2d');
-  const grd = gx.createRadialGradient(64, 64, 0, 64, 64, 64);
-  grd.addColorStop(0, 'rgba(255,214,102,0.9)');
-  grd.addColorStop(0.25, 'rgba(255,190,40,0.35)');
-  grd.addColorStop(1, 'rgba(255,170,0,0)');
-  gx.fillStyle = grd;
-  gx.fillRect(0, 0, 128, 128);
-  const glowTex = new THREE.CanvasTexture(gc);
-  const glow = new THREE.Sprite(new THREE.SpriteMaterial({
-    map: glowTex, transparent: true, blending: THREE.AdditiveBlending, depthWrite: false
-  }));
-  glow.scale.set(9, 9, 1);
-  core.add(glow);
-
-  /* ---------------- anneaux orbitaux (particules) ---------------- */
-  function ring(radius, count, tiltX, tiltZ, size, opacity) {
-    const a = new Float32Array(count * 3);
-    for (let i = 0; i < count; i++) {
-      const t = (i / count) * Math.PI * 2;
-      const r = radius + (Math.random() - 0.5) * 0.35;
-      a[i * 3] = Math.cos(t) * r;
-      a[i * 3 + 1] = (Math.random() - 0.5) * 0.12;
-      a[i * 3 + 2] = Math.sin(t) * r;
-    }
-    const g = new THREE.BufferGeometry();
-    g.setAttribute('position', new THREE.BufferAttribute(a, 3));
-    const m = new THREE.Points(g, new THREE.PointsMaterial({
-      color: 0xffc933, size, transparent: true, opacity,
-      blending: THREE.AdditiveBlending, depthWrite: false, sizeAttenuation: true
-    }));
-    const holder = new THREE.Group();
-    holder.rotation.set(tiltX, 0, tiltZ);
-    holder.add(m);
-    scene.add(holder);
-    return { holder, m };
-  }
-  const rings = [
-    ring(9.4, 520, 1.15, 0.28, 0.07, 0.75),
-    ring(10.8, 420, 1.35, -0.42, 0.055, 0.5)
-  ];
 
   /* ---------------- interaction ---------------- */
   let mx = 0, my = 0, tx = 0, ty = 0;           // parallaxe amortie
@@ -362,7 +279,7 @@ function start(THREE) {
   // qu'il réagit. Une pulsation automatique au chargement le montre d'emblée.
   setTimeout(() => {
     if (waveStart >= 0) return;               // l'utilisateur a déjà cliqué
-    U.uWaveAt.value.set(0.36, 0.05);          // sur la sphère, à droite du titre
+    U.uWaveAt.value.set(0.18, 0.05);          // dans la zone dégagée, à droite du titre
     waveStart = performance.now();
   }, 1400);
 
@@ -379,29 +296,6 @@ function start(THREE) {
 
     U.uT.value = t;
     U.uPush.value += (pushTarget - U.uPush.value) * 0.07;   // entrée/sortie douce
-
-    // noyau : contre-rotation + pulsation (plus forte pendant une onde)
-    ico.rotation.x = -t * 0.21; ico.rotation.y = -t * 0.34;
-    icoPts.rotation.copy(ico.rotation);
-    ico2.rotation.x = t * 0.5;  ico2.rotation.z = t * 0.38;
-    const wv = U.uWave.value >= 0 ? Math.exp(-U.uWave.value * 2.2) : 0;
-    const pulse = 1 + Math.sin(t * 1.6) * 0.04 + wv * 0.35 + U.uPush.value * 0.06;
-    core.scale.setScalar(pulse * (1 - U.uScroll.value * 0.4));
-    glow.material.opacity = (0.75 + Math.sin(t * 1.6) * 0.15 + wv * 0.5) * (1 - U.uScroll.value);
-    ico.material.opacity = 0.55 * (1 - U.uScroll.value * 0.9);
-    ico2.material.opacity = 0.8 * (1 - U.uScroll.value * 0.9);
-
-    rings[0].m.rotation.y = t * 0.12 + mx * 0.4;
-    rings[1].m.rotation.y = -t * 0.08 + mx * 0.3;
-    rings[0].holder.rotation.x = 1.15 + my * 0.25;
-    rings[1].holder.rotation.x = 1.35 + my * 0.2;
-    rings[0].m.material.opacity = 0.75 * (1 - U.uScroll.value);
-    rings[1].m.material.opacity = 0.5 * (1 - U.uScroll.value);
-
-    // légère parallaxe caméra
-    camera.position.x = mx * 0.9;
-    camera.position.y = -my * 0.6;
-    camera.lookAt(scene.position.x * 0.0, 0, 0);
 
     // onde : 2,2 s de vie puis extinction
     if (waveStart >= 0) {
@@ -449,7 +343,6 @@ function start(THREE) {
       W = hero.clientWidth; H = hero.clientHeight;
       camera.aspect = W / H;
       camera.updateProjectionMatrix();
-      layout();
       renderer.setSize(W, H, false);
       U.uDpr.value = renderer.getPixelRatio();
       U.uAspect.value = W / H;

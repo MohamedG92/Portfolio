@@ -393,9 +393,9 @@
       NW = window.innerWidth; NH = window.innerHeight;
       net.width = NW * ndpr; net.height = NH * ndpr;
       ctx.setTransform(ndpr, 0, 0, ndpr, 0, 0);
-      var count = Math.min(90, Math.round((NW * NH) / 16000));
+      var count = Math.min(60, Math.round((NW * NH) / 24000));
       while (P.length < count) P.push({ x: Math.random() * NW, y: Math.random() * NH,
-        vx: (Math.random() - 0.5) * 0.25, vy: (Math.random() - 0.5) * 0.25, r: 0.8 + Math.random() * 1.4 });
+        vx: (Math.random() - 0.5) * 0.14, vy: (Math.random() - 0.5) * 0.14, r: 0.8 + Math.random() * 1.4 });
       P.length = count;
     }
 
@@ -411,7 +411,7 @@
         for (var j = i + 1; j < P.length; j++) {
           var b = P[j], dx = a.x - b.x, dy = a.y - b.y, d = dx * dx + dy * dy;
           if (d < LINK * LINK) {
-            ctx.strokeStyle = 'rgba(' + GOLD + ',' + ((1 - Math.sqrt(d) / LINK) * 0.3).toFixed(3) + ')';
+            ctx.strokeStyle = 'rgba(' + GOLD + ',' + ((1 - Math.sqrt(d) / LINK) * 0.13).toFixed(3) + ')';
             ctx.lineWidth = 1;
             ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke();
           }
@@ -419,10 +419,10 @@
         // liens vers le curseur
         var mdx = a.x - mxN, mdy = a.y - myN, md = mdx * mdx + mdy * mdy;
         if (md < 200 * 200) {
-          ctx.strokeStyle = 'rgba(' + GOLD + ',' + ((1 - Math.sqrt(md) / 200) * 0.45).toFixed(3) + ')';
+          ctx.strokeStyle = 'rgba(' + GOLD + ',' + ((1 - Math.sqrt(md) / 200) * 0.25).toFixed(3) + ')';
           ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(mxN, myN); ctx.stroke();
         }
-        ctx.fillStyle = 'rgba(' + GOLD + ',.7)';
+        ctx.fillStyle = 'rgba(' + GOLD + ',.4)';
         ctx.beginPath(); ctx.arc(a.x, a.y, a.r, 0, 6.283); ctx.fill();
       }
     }
