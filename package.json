@@ -1,0 +1,21 @@
+{
+  "name": "portfolio-mohamed-iraqi",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Portfolio statique — HTML/CSS/JS, Three.js embarqué, déployé sur Vercel (Hobby).",
+  "type": "module",
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "preview": "node scripts/serve.mjs",
+    "dev": "node scripts/build.mjs && node scripts/serve.mjs"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "@fontsource/ibm-plex-mono": "5.3.0",
+    "@fontsource/ibm-plex-sans": "5.3.0",
+    "@fontsource/space-grotesk": "5.3.0",
+    "three": "0.170.0"
+  }
+}

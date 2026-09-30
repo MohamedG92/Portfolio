@@ -1,70 +1,61 @@
 # Portfolio — Mohamed Iraqi Houssaini
 
-Site personnel monopage, en français. HTML / CSS / JavaScript purs, **aucune étape
-de build**, aucune dépendance npm. Three.js est chargé à la demande depuis un CDN.
+Site personnel monopage, en français. HTML / CSS / JavaScript purs, sans framework.
+Hébergé sur **Vercel (offre Hobby, gratuite)** — aucun serveur, aucune base de données,
+aucun service payant : **0 €/mois**. Le contact passe par `mailto:` / `tel:`.
+
+Le site est **autonome** : Three.js et les polices sont installés via npm puis copiés
+dans le build — aucune ressource chargée depuis un CDN à l'exécution.
 
 ```
 new_web/
-├── vercel.json              config de déploiement (racine du dépôt)
-└── front/                   ← tout le site est ici
+├── package.json             dépendances (three, @fontsource/*) + scripts
+├── vercel.json              config de déploiement
+├── scripts/
+│   ├── build.mjs            front/ → dist/ + Three.js + polices + vérifications
+│   └── serve.mjs            serveur statique local pour tester dist/
+└── front/                   ← sources du site
     ├── index.html           page + sprite SVG des logos (inline)
     ├── index.css            styles
-    ├── index.js             UI : nav, révélations, compteurs, curseur, marquee
+    ├── index.js             UI : nav, révélations, curseur, inclinaison 3D, cube
     ├── hero-gl.js           fond WebGL du hero (module ES, isolé)
     ├── CV-Iraqi-Houssaini-Mohamed.pdf
-    └── assets/
-        ├── portrait.webp / .jpg
-        └── headshot.webp / .jpg
+    └── assets/              portrait / headshot (WebP + repli JPEG)
 ```
 
 ## Développement local
 
-Ouvrir `front/index.html` directement fonctionne, mais `hero-gl.js` est un module ES :
-certains navigateurs bloquent les modules sur `file://`. Mieux vaut servir le dossier :
+Node 18+ requis.
 
 ```bash
-cd front
-python -m http.server 8777
-# → http://127.0.0.1:8777
+npm install
+npm run dev        # build + serveur → http://localhost:4173
 ```
+
+`npm run build` seul génère `dist/` ; `npm run preview` le sert. Après une modification
+dans `front/`, relancer `npm run dev`.
+
+Le build **échoue** si une ressource locale référencée (image, CSS, JS, police…) est
+introuvable, ou si un `<script>` / une feuille de style est chargé depuis un domaine
+externe. Il signale aussi tout fichier de plus de 800 Ko.
 
 ## Déploiement sur Vercel
 
-**Option A — via GitHub (recommandé, redéploie à chaque push)**
-
-```bash
-cd new_web
-git init
-git add .
-git commit -m "Portfolio"
-git branch -M main
-git remote add origin https://github.com/MohamedG92/<nom-du-repo>.git
-git push -u origin main
-```
-
-Puis sur [vercel.com/new](https://vercel.com/new) : importer le dépôt.
-Framework Preset : **Other**. Laisser le reste vide — `vercel.json` s'occupe du
-`outputDirectory: "front"`.
-
-**Option B — en ligne de commande**
-
-```bash
-npm i -g vercel
-cd new_web
-vercel          # aperçu
-vercel --prod   # production
-```
+Importer le dépôt GitHub sur [vercel.com/new](https://vercel.com/new).
+Framework Preset : **Other** — `vercel.json` fixe déjà `npm install`, `npm run build`
+et `outputDirectory: "dist"`. Chaque push sur `main` redéploie le site.
 
 ## Ce que fait `vercel.json`
 
-- sert le contenu de `front/`
-- `/assets/*` en cache un an (`immutable`), CSS et JS en cache court
+- build : `npm run build`, sert le contenu de `dist/`
+- `/assets/*` en cache un an (`immutable`), `/fonts/*` et `/vendor/*` 30 jours,
+  CSS et JS en cache court
 - en-têtes de sécurité : `X-Content-Type-Options`, `X-Frame-Options`,
   `Referrer-Policy`, `Permissions-Policy`
 
 ## Notes techniques
 
-- **`hero-gl.js` est volontairement séparé d'`index.js`.** Si le CDN Three.js tombe,
+- **`hero-gl.js` est volontairement séparé d'`index.js`.** Si Three.js ne charge pas,
   si WebGL est absent ou si l'utilisateur a activé « réduire les animations », le
   fichier ne fait rien et la page reste entièrement fonctionnelle : un décor CSS
   (halo + grille) prend le relais.
