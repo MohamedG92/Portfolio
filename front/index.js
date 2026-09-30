@@ -481,8 +481,7 @@
       // la case sous le repère (en haut) : angle d'origine ramené dans [0, 360)
       var under = (360 - (rot % 360)) % 360;
       var win = Math.floor(under / (360 / SEG)) % 2 === 0;
-      var code = 'MRJ-' + Math.random().toString(36).slice(2, 6).toUpperCase();
-      spinRes.textContent = win ? T('win') + code : T('lose');
+      spinRes.textContent = T(win ? 'win' : 'lose');
       spinRes.classList.add(win ? 'is-win' : 'is-lose');
     }
   }

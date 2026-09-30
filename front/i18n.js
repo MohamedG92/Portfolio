@@ -26,13 +26,13 @@ window.I18N = {
     en: {
       menuOpen: 'Open menu', menuClose: 'Close menu',
       spinning: 'Spinning…',
-      win: 'You win! Code: ', lose: 'So close — try again',
+      win: 'You win! 🎉', lose: 'So close — try again',
       mailSubject: 'Internship opportunity'
     },
     fr: {
       menuOpen: 'Ouvrir le menu', menuClose: 'Fermer le menu',
       spinning: 'La roue tourne…',
-      win: 'Gagné ! Code : ', lose: 'Presque — retentez votre chance',
+      win: 'Gagné ! 🎉', lose: 'Presque — retentez votre chance',
       mailSubject: 'Opportunité de stage'
     }
   },
