@@ -1,86 +1,84 @@
 # Portfolio — Mohamed Iraqi Houssaini
 
-Site personnel monopage, en français. HTML / CSS / JavaScript purs, sans framework.
-Hébergé sur **Vercel (offre Hobby, gratuite)** — aucun serveur, aucune base de données,
-aucun service payant : **0 €/mois**. Le contact passe par `mailto:` / `tel:`.
+A one-page personal website. Pure HTML / CSS / JavaScript, no framework.
+Hosted on **Vercel (free Hobby plan)**: no server, no database,
+no paid service: **€0/month**. Contact goes through `mailto:` / `tel:`.
 
-Le site est **autonome** : Three.js et les polices sont installés via npm puis copiés
-dans le build — aucune ressource chargée depuis un CDN à l'exécution.
+The site is **self-contained**: Three.js and the fonts are installed with npm and then copied
+into the build, so nothing is loaded from a CDN at runtime.
 
 ```
 new_web/
-├── package.json             dépendances (three, @fontsource/*) + scripts
-├── vercel.json              config de déploiement
+├── package.json             dependencies (three, @fontsource/*) + scripts
+├── vercel.json              deployment config
 ├── scripts/
-│   ├── build.mjs            front/ → dist/ + Three.js + polices + vérifications
-│   └── serve.mjs            serveur statique local pour tester dist/
-└── front/                   ← sources du site
-    ├── index.html           page + sprite SVG des logos (inline)
+│   ├── build.mjs            front/ → dist/ + Three.js + fonts + checks
+│   └── serve.mjs            local static server to test dist/
+└── front/                   ← site sources
+    ├── index.html           page + inline SVG logo sprite
     ├── index.css            styles
-    ├── index.js             UI : nav, révélations, curseur, inclinaison 3D, cube
-    ├── hero-gl.js           fond WebGL du hero (module ES, isolé)
+    ├── index.js             UI: nav, reveals, cursor, 3D tilt, cube
+    ├── hero-gl.js           WebGL hero background (isolated ES module)
     ├── CV-Iraqi-Houssaini-Mohamed.pdf
-    └── assets/              portrait / headshot (WebP + repli JPEG)
+    └── assets/              portrait / headshot (WebP + JPEG fallback)
 ```
 
-## Développement local
+## Local development
 
-Node 18+ requis.
+Requires Node 18+.
 
 ```bash
 npm install
-npm run dev        # build + serveur → http://localhost:4173
+npm run dev        # build + server → http://localhost:4173
 ```
 
-`npm run build` seul génère `dist/` ; `npm run preview` le sert. Après une modification
-dans `front/`, relancer `npm run dev`.
+`npm run build` on its own generates `dist/`; `npm run preview` serves it. After changing
+something in `front/`, run `npm run dev` again.
 
-Le build **échoue** si une ressource locale référencée (image, CSS, JS, police…) est
-introuvable, ou si un `<script>` / une feuille de style est chargé depuis un domaine
-externe. Il signale aussi tout fichier de plus de 800 Ko.
+The build **fails** if a referenced local resource (image, CSS, JS, font…) is missing,
+or if a `<script>` / stylesheet is loaded from an external domain. It also flags any file
+larger than 800 KB.
 
-## Déploiement sur Vercel
+## Deploying to Vercel
 
-Importer le dépôt GitHub sur [vercel.com/new](https://vercel.com/new).
-Framework Preset : **Other** — `vercel.json` fixe déjà `npm install`, `npm run build`
-et `outputDirectory: "dist"`. Chaque push sur `main` redéploie le site.
+Import the GitHub repository at [vercel.com/new](https://vercel.com/new).
+Framework Preset: **Other**. `vercel.json` already sets `npm install`, `npm run build`
+and `outputDirectory: "dist"`. Every push to `main` redeploys the site.
 
-## Ce que fait `vercel.json`
+## What `vercel.json` does
 
-- build : `npm run build`, sert le contenu de `dist/`
-- `/assets/*` en cache un an (`immutable`), `/fonts/*` et `/vendor/*` 30 jours,
-  CSS et JS en cache court
-- en-têtes de sécurité : `X-Content-Type-Options`, `X-Frame-Options`,
+- build: `npm run build`, serves the content of `dist/`
+- `/assets/*` cached for one year (`immutable`), `/fonts/*` and `/vendor/*` for 30 days,
+  CSS and JS with a short cache
+- security headers: `X-Content-Type-Options`, `X-Frame-Options`,
   `Referrer-Policy`, `Permissions-Policy`
 
-## Notes techniques
+## Technical notes
 
-- **`hero-gl.js` est volontairement séparé d'`index.js`.** Si Three.js ne charge pas,
-  si WebGL est absent ou si l'utilisateur a activé « réduire les animations », le
-  fichier ne fait rien et la page reste entièrement fonctionnelle : un décor CSS
-  (halo + grille) prend le relais.
-- **Le hero est interactif** : 1 800 points répartis en spirale de Fibonacci sur une
-  sphère, reliés par ~2 800 segments.
-  - les particules **fuient le curseur** et chauffent vers le blanc-or en s'approchant ;
-  - un **clic (ou un tap)** envoie une onde de choc qui traverse la sphère sur 2,2 s ;
-  - le **défilement** disperse et estompe l'ensemble.
+- **`hero-gl.js` is deliberately separate from `index.js`.** If Three.js doesn't load,
+  WebGL is missing, or the user turned on "reduce motion", the file does nothing and the
+  page stays fully usable: a CSS background (halo + grid) takes over.
+- **The hero is interactive**: 1,800 points arranged in a Fibonacci spiral on a sphere,
+  connected by ~2,800 segments.
+  - the particles **flee the cursor** and heat up towards white-gold as it gets closer;
+  - a **click (or tap)** sends a shockwave through the sphere over 2.2 s;
+  - **scrolling** scatters and fades the whole thing.
 
-  Points et liens partagent la **même fonction GLSL `warp()`** et le même objet
-  d'uniforms : sans cela les traits se décrocheraient des points dès la première
-  déformation. Tout se passe dans le vertex shader — aucune boucle JS par particule.
-- Sur mobile la répulsion est désactivée (pas de curseur), mais le tap déclenche
-  bien l'onde de choc.
-- Le rendu WebGL se met en pause hors écran et quand l'onglet est caché.
-- Les logos viennent de [Simple Icons](https://simpleicons.org) (CC0), intégrés en
-  sprite SVG inline. MATLAB, Proteus, Assembly, SSH et LinkedIn n'y figurent pas :
-  ils sont dessinés à la main dans le sprite.
-- Le portrait et la photo de profil ont été extraits du CV PDF puis optimisés
-  (WebP + repli JPEG).
-- `prefers-reduced-motion` désactive WebGL, révélations, compteurs et marquee.
+  Points and links share **the same GLSL `warp()` function** and the same uniforms object:
+  without that, the lines would detach from the points at the first deformation. Everything
+  happens in the vertex shader, with no JavaScript loop per particle.
+- On mobile the repulsion is turned off (no cursor), but a tap still triggers the shockwave.
+- WebGL rendering pauses when off screen and when the tab is hidden.
+- The logos come from [Simple Icons](https://simpleicons.org) (CC0), embedded as an inline
+  SVG sprite. MATLAB, Proteus, Assembly, SSH and LinkedIn aren't in it, so they are drawn
+  by hand in the sprite.
+- The portrait and profile photo were extracted from the PDF CV and then optimised
+  (WebP + JPEG fallback).
+- `prefers-reduced-motion` turns off WebGL, reveals, counters and the marquee.
 
-## À mettre à jour plus tard
+## To update later
 
-- Le badge « Ouvert aux stages » (nav) et le bloc « Disponible pour un stage
-  d'observation » (section Contact) — à changer une fois le stage trouvé.
-- `<link rel="canonical">` et `og:image` dans `index.html` : remplacer l'URL par
-  celle de Vercel une fois le site en ligne.
+- The "Open to internships" badge (nav) and the "Available for an observation internship"
+  block (Contact section): change them once an internship is found.
+- `<link rel="canonical">` and `og:image` in `index.html`: replace the URL with the Vercel
+  one once the site is online.
