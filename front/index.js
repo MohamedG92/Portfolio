@@ -222,7 +222,7 @@
 
   /* -------------------------------------------------- marquee (logos tech) */
   var MQ = [
-    ['cplusplus', 'C++', '#659AD2'], ['python', 'Python', '#4B8BBE'],
+    ['java', 'Java', '#E76F00'], ['cplusplus', 'C++', '#659AD2'], ['python', 'Python', '#4B8BBE'],
     ['php', 'PHP', '#8993BE'], ['javascript', 'JavaScript', '#F7DF1E'],
     ['node', 'Node.js', '#5FA04E'], ['db', 'SQL Server', '#E0443B'],
     ['html5', 'HTML5', '#E34F26'], ['css', 'CSS', '#A277E0'],
