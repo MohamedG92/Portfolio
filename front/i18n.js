@@ -83,10 +83,11 @@ window.I18N = {
 
     h2Projects: 'Projets',
     projMeta: '9 réalisations',
-    enTagRel: 'Publiée · v1.0',
+    enTagRel: 'Sur le Microsoft Store',
     enTagKind: 'Application desktop · Open source',
     enD: "Ma propre <strong>application de prise de notes pour étudiants</strong>, conçue à partir d'un croquis fait main : chapitres numérotés en une touche, listes numérotées automatiques, code collé transformé en <strong>blocs colorés</strong>, autocomplétion à partir de vos propres notes, onglets avec logos des langages et 26 thèmes. Gratuite, et le code source est public.",
-    enP1: 'Version Windows empaquetée pour le <strong>Microsoft Store</strong> (soumise, en cours de validation)',
+    enP1: 'Version Windows <strong>publiée sur le Microsoft Store</strong>, gratuite (paquet MSIX, certifié par Microsoft)',
+    enLinkStore: 'Disponible sur le Microsoft Store',
     enP2: 'Version macOS : raccourcis Cmd, barre de titre native, <code>.dmg</code> construit par GitHub Actions pour Apple Silicon &amp; Intel',
     enP3: 'Restauration de session (même les onglets non enregistrés), instance unique, optimisée pour rester légère en RAM',
     enLinkWin: 'Windows · code source',

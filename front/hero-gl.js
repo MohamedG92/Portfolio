@@ -54,8 +54,8 @@ function start(THREE) {
   const siz = new Float32Array(N);
   const pts = [];
 
-  const hot  = new THREE.Color(0xffc933);   // or, vers l'équateur
-  const cool = new THREE.Color(0x5a3f10);   // ambre profond, vers les pôles
+  const hot  = new THREE.Color(0xc084fc);   // violet clair, vers l'équateur
+  const cool = new THREE.Color(0x3b0764);   // violet profond, vers les pôles
   const GOLDEN = Math.PI * (3 - Math.sqrt(5));
 
   for (let i = 0; i < N; i++) {

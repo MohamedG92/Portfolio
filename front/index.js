@@ -386,7 +386,7 @@
     var ctx = net.getContext('2d');
     var P = [], NW = 0, NH = 0, ndpr = 1, netOn = false, netRaf = null;
     var mxN = -9999, myN = -9999;
-    var LINK = 150, GOLD = '255,201,51';
+    var LINK = 150, GOLD = '192,132,252';
 
     function sizeNet() {
       ndpr = Math.min(window.devicePixelRatio || 1, 1.5);
